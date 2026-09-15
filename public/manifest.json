@@ -9,5 +9,12 @@
   "start_url": "/",
   "theme_color": "#ffffff",
   "id": "ff-tournament",
-  "description": "Free Fire Tournament Registration and Management App"
+  "description": "Free Fire Tournament Registration and Management App",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
 }
