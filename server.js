@@ -6,8 +6,7 @@ const crypto = require("crypto");
 const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
-const PORT = 3000;
-
+const PORT = process.env.PORT || 3000;
 const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_KEY
