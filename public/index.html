@@ -84,6 +84,38 @@
     font-weight: bold;
     cursor: pointer;
 }
+.status-check {
+    margin: 20px;
+    padding: 20px;
+    background: #1d1d1d;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.status-check h3 {
+    color: #ff4500;
+    margin-bottom: 15px;
+}
+
+.status-check input {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+}
+
+.status-check button {
+    width: 100%;
+    margin-top: 12px;
+}
+
+#statusMessage {
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: bold;
+}
 </style>
 </head>
 
@@ -114,7 +146,67 @@
 </a>
 <button class="register-button" onclick="location.href='register.html'">
     REGISTER NOW
-</button>    </div>
+</button>
+<div class="status-check">
+    <h3>🔎 Registration Status</h3>
 
+    <input
+        type="text"
+        id="statusUid"
+        placeholder="Enter Captain UID"
+    >
+
+    <button onclick="checkRegistration()">
+        CHECK STATUS
+    </button>
+
+    <p id="statusMessage"></p>
+</div>
+  </div>
+<script>
+async function checkRegistration() {
+    const uid = document.getElementById("statusUid").value.trim();
+    const message = document.getElementById("statusMessage");
+
+    if (!uid) {
+        message.innerText = "❌ Captain UID দিন";
+        return;
+    }
+
+    message.innerText = "⏳ Checking...";
+
+    try {
+        const response = await fetch(
+            "/player/" + encodeURIComponent(uid)
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            message.innerText =
+                "❌ " + (data.message || "Registration পাওয়া যায়নি");
+            return;
+        }
+
+        const team = data.data;
+        const status = team.status || "Pending";
+
+        if (status === "Approved") {
+            message.innerText =
+                "✅ APPROVED\nTeam: " + (team.team_name || "-");
+        } else if (status === "Rejected") {
+            message.innerText =
+                "❌ REJECTED\nTeam: " + (team.team_name || "-");
+        } else {
+            message.innerText =
+                "⏳ PENDING\nTeam: " + (team.team_name || "-");
+        }
+
+    } catch (error) {
+        message.innerText =
+            "❌ Server error. আবার চেষ্টা করুন।";
+    }
+}
+</script>
 </body>
 </html>
