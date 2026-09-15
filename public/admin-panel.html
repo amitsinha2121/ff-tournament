@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FF Tournament Admin Panel</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+        }
+
+        header {
+            background: #ff9800;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .container {
+            padding: 15px;
+        }
+
+        .box,
+        .team {
+            background: #1e1e1e;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        h2 {
+            color: #ff9800;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin: 7px 0;
+            border-radius: 7px;
+            border: none;
+            font-size: 15px;
+        }
+
+        button {
+            border: none;
+            padding: 10px 15px;
+            margin: 5px 3px;
+            border-radius: 7px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .save {
+            background: #16803c;
+        }
+
+        .approve {
+            background: #16803c;
+        }
+
+        .reject {
+            background: #b71c1c;
+        }
+
+        .logout {
+            background: #333;
+        }
+
+        .status {
+            font-weight: bold;
+            padding: 7px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .pending {
+            background: #795548;
+        }
+
+        .approved {
+            background: #16803c;
+        }
+
+        .rejected {
+            background: #b71c1c;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <h1>🔥 FF Tournament Admin</h1>
+
+    <button class="logout" onclick="logout()">
+        LOGOUT
+    </button>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- ========================= -->
+    <!-- TOURNAMENT CONTROL -->
+    <!-- ========================= -->
+
+    <div class="box">
+
+        <h2>🎮 Tournament Control</h2>
+
+        <input
+            type="text"
+            id="roomId"
+            placeholder="Room ID"
+        >
+
+        <input
+            type="text"
+            id="roomPassword"
+            placeholder="Room Password"
+        >
+
+        <select id="tournamentStatus">
+
+            <option>
+                Registration Open
+            </option>
+
+            <option>
+                Registration Closed
+            </option>
+
+            <option>
+                Room Published
+            </option>
+
+            <option>
+                Match Started
+            </option>
+
+            <option>
+                Match Finished
+            </option>
+
+        </select>
+
+        <button
+            class="save"
+            onclick="saveTournamentSettings()"
+        >
+            💾 SAVE TOURNAMENT
+        </button>
+
+        <p id="settingsMessage"></p>
+
+    </div>
+
+<hr>
+
+<h2>📢 Notice Management</h2>
+
+<form id="noticeForm">
+
+    <input
+        type="text"
+        id="noticeTitle"
+        placeholder="Notice Title"
+        required
+    >
+
+    <textarea
+        id="noticeMessage"
+        placeholder="Notice Message"
+        required
+    ></textarea>
+
+    <input
+        type="date"
+        id="noticeDate"
+    >
+
+    <input
+        type="time"
+        id="noticeTime"
+    >
+
+    <button type="submit">
+        📢 Add Notice
+    </button>
+
+</form>
+
+<h3>📋 Existing Notices</h3>
+
+<div id="noticeList">
+    Loading notices...
+</div>
+    <!-- ========================= -->
+    <!-- REGISTERED TEAMS -->
+    <!-- ========================= -->
+<hr>
+
+<h2>🏆 Leaderboard Management</h2>
+
+<form id="leaderboardForm">
+
+    <input
+        type="text"
+        id="leaderboardTeam"
+        placeholder="Team Name"
+        required
+    >
+
+    <input
+        type="number"
+        id="leaderboardKills"
+        placeholder="Kills"
+        min="0"
+        required
+    >
+
+    <input
+        type="number"
+        id="leaderboardPoints"
+        placeholder="Points"
+        min="0"
+        required
+    >
+
+    <button type="submit">
+        🏆 Add / Update Leaderboard
+    </button>
+
+</form>
+
+<h3>📊 Current Leaderboard</h3>
+
+<div id="leaderboardList">
+    Loading leaderboard...
+</div>
+    <h2>👥 Registered Teams</h2>
+
+    <div id="teams">
+        Loading...
+    </div>
+
+
+</div>
+
+
+<script>
+
+const token =
+    sessionStorage.getItem("adminToken");
+
+
+if (!token) {
+
+    window.location.href =
+        "admin.html";
+}
+
+
+// ===============================
+// LOAD TOURNAMENT SETTINGS
+// ===============================
+
+async function loadTournamentSettings() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/admin/tournament-settings",
+                {
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        if (response.status === 401) {
+
+            logout();
+
+            return;
+        }
+
+
+        const result =
+            await response.json();
+
+
+        if (result.success && result.data) {
+
+            document.getElementById(
+                "roomId"
+            ).value =
+                result.data.room_id || "";
+
+
+            document.getElementById(
+                "roomPassword"
+            ).value =
+                result.data.room_password || "";
+
+
+            document.getElementById(
+                "tournamentStatus"
+            ).value =
+                result.data.tournament_status ||
+                "Registration Open";
+        }
+
+    } catch (error) {
+
+        console.error(error);
+    }
+}
+
+
+// ===============================
+// SAVE TOURNAMENT SETTINGS
+// ===============================
+
+async function saveTournamentSettings() {
+
+    const roomId =
+        document.getElementById(
+            "roomId"
+        ).value.trim();
+
+
+    const roomPassword =
+        document.getElementById(
+            "roomPassword"
+        ).value.trim();
+
+
+    const tournamentStatus =
+        document.getElementById(
+            "tournamentStatus"
+        ).value;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/admin/tournament-settings",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " + token
+                    },
+
+                    body: JSON.stringify({
+
+                        room_id:
+                            roomId,
+
+                        room_password:
+                            roomPassword,
+
+                        tournament_status:
+                            tournamentStatus
+                    })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (result.success) {
+
+            document.getElementById(
+                "settingsMessage"
+            ).innerText =
+                "✅ Tournament settings saved!";
+
+        } else {
+
+            document.getElementById(
+                "settingsMessage"
+            ).innerText =
+                "❌ " +
+                (result.message ||
+                "Save হয়নি");
+        }
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "settingsMessage"
+        ).innerText =
+            "❌ Server error!";
+    }
+}
+
+
+// ===============================
+// LOAD TEAMS
+// ===============================
+
+async function loadTeams() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/admin/registrations",
+                {
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        if (response.status === 401) {
+
+            logout();
+
+            return;
+        }
+
+
+        const result =
+            await response.json();
+
+
+        if (!result.success) {
+
+            document.getElementById(
+                "teams"
+            ).innerHTML =
+                "Data load হয়নি!";
+
+            return;
+        }
+
+
+        const teams =
+            result.data;
+
+
+        if (teams.length === 0) {
+
+            document.getElementById(
+                "teams"
+            ).innerHTML =
+                "কোনো registration নেই।";
+
+            return;
+        }
+
+
+        document.getElementById(
+            "teams"
+        ).innerHTML =
+
+            teams.map(
+                (team, index) => {
+
+                    const status =
+                        team.status ||
+                        "Pending";
+
+
+                    const statusClass =
+                        status.toLowerCase();
+
+
+                    return `
+
+                    <div class="team">
+
+                        <h2>
+                            🏆 Team ${index + 1}
+                        </h2>
+
+                        <p>
+                            <b>Team:</b>
+                            ${team.team_name}
+                        </p>
+
+                        <p>
+                            <b>Captain:</b>
+                            ${team.captain_name}
+                            (${team.captain_uid})
+                        </p>
+
+                        <p>
+                            <b>Player 2:</b>
+                            ${team.player2_name || "-"}
+                            (${team.player2_uid || "-"})
+                        </p>
+
+                        <p>
+                            <b>Player 3:</b>
+                            ${team.player3_name || "-"}
+                            (${team.player3_uid || "-"})
+                        </p>
+
+                        <p>
+                            <b>Player 4:</b>
+                            ${team.player4_name || "-"}
+                            (${team.player4_uid || "-"})
+                        </p>
+
+                        <p>
+                            <b>Phone:</b>
+                            ${team.phone || "-"}
+                        </p>
+
+                        <p>
+                            <b>Transaction ID:</b>
+                            ${team.transaction_id || "-"}
+                        </p>
+
+                        <p>
+                            <b>Status:</b>
+
+                            <span
+                                class="status ${statusClass}"
+                            >
+                                ${status}
+                            </span>
+
+                        </p>
+
+                        <textarea
+                            id="note-${team.id}"
+                            placeholder="Admin note"
+                        >${team.admin_note || ""}</textarea>
+
+
+                        <br>
+
+
+                        <button
+                            class="approve"
+                            onclick="
+                            updateStatus(
+                                ${team.id},
+                                'Approved'
+                            )"
+                        >
+                            ✅ APPROVE
+                        </button>
+
+
+                        <button
+                            class="reject"
+                            onclick="
+                            updateStatus(
+                                ${team.id},
+                                'Rejected'
+                            )"
+                        >
+                            ❌ REJECT
+                        </button>
+
+                    </div>
+
+                    `;
+
+                }
+            ).join("");
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "teams"
+        ).innerHTML =
+            "Server error!";
+    }
+}
+
+
+// ===============================
+// UPDATE TEAM STATUS
+// ===============================
+
+async function updateStatus(
+    id,
+    status
+) {
+
+    const note =
+        document.getElementById(
+            "note-" + id
+        ).value;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/admin/registrations/"
+                + id
+                + "/status",
+                {
+
+                    method: "PATCH",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " + token
+                    },
+
+                    body: JSON.stringify({
+
+                        status:
+                            status,
+
+                        admin_note:
+                            note
+                    })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (result.success) {
+
+            alert(
+                status === "Approved"
+                    ? "✅ Team Approved!"
+                    : "❌ Team Rejected!"
+            );
+
+
+            loadTeams();
+
+        } else {
+
+            alert(
+                result.message ||
+                "Update হয়নি"
+            );
+        }
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Server error!"
+        );
+    }
+}
+
+
+// ===============================
+// LOGOUT
+// ===============================
+
+function logout() {
+
+    sessionStorage.removeItem(
+        "adminToken"
+    );
+
+    window.location.href =
+        "admin.html";
+}
+
+
+// ===============================
+// START
+// ===============================
+
+loadTournamentSettings();
+
+loadTeams();
+const noticeForm = document.getElementById("noticeForm");
+const noticeList = document.getElementById("noticeList");
+
+async function loadNotices() {
+    const token = sessionStorage.getItem("adminToken");
+
+    const response = await fetch("/notices");
+    const result = await response.json();
+
+    noticeList.innerHTML = "";
+
+    if (!result.data || result.data.length === 0) {
+        noticeList.innerHTML = "<p>কোনো Notice নেই।</p>";
+        return;
+    }
+
+    result.data.forEach(notice => {
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+            <h3>📢 ${notice.title}</h3>
+            <p>${notice.message}</p>
+            <p>📅 ${notice.tournament_date || "Date নেই"}</p>
+            <p>⏰ ${notice.tournament_time || "Time নেই"}</p>
+
+            <button onclick="deleteNotice(${notice.id})">
+                🗑️ Delete
+            </button>
+
+            <hr>
+        `;
+
+        noticeList.appendChild(div);
+    });
+}
+
+noticeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const token = sessionStorage.getItem("adminToken");
+
+    const response = await fetch("/admin/notices", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({
+            title: document.getElementById("noticeTitle").value,
+            message: document.getElementById("noticeMessage").value,
+            tournament_date: document.getElementById("noticeDate").value,
+            tournament_time: document.getElementById("noticeTime").value
+        })
+    });
+
+    const result = await response.json();
+
+    alert(result.message);
+
+    if (result.success) {
+        noticeForm.reset();
+        loadNotices();
+    }
+});
+
+async function deleteNotice(id) {
+    const token = sessionStorage.getItem("adminToken");
+
+    const response = await fetch("/admin/notices/" + id, {
+        method: "DELETE",
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    });
+
+    const result = await response.json();
+
+    alert(result.message);
+
+    if (result.success) {
+        loadNotices();
+    }
+}
+
+loadNotices();
+// ================= LEADERBOARD =================
+
+const leaderboardForm = document.getElementById("leaderboardForm");
+const leaderboardList = document.getElementById("leaderboardList");
+
+async function loadLeaderboard() {
+    try {
+        const token = sessionStorage.getItem("adminToken");
+
+        const response = await fetch("/admin/leaderboard", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            leaderboardList.innerHTML = "❌ Leaderboard load হয়নি";
+            return;
+        }
+
+        leaderboardList.innerHTML = "";
+
+        if (!result.data || result.data.length === 0) {
+            leaderboardList.innerHTML = "🏆 এখনো কোনো team নেই";
+            return;
+        }
+
+        result.data.forEach((team, index) => {
+
+            const div = document.createElement("div");
+
+            div.style.padding = "12px";
+            div.style.marginBottom = "10px";
+            div.style.border = "1px solid #334155";
+            div.style.borderRadius = "10px";
+
+            div.innerHTML = `
+                <strong>🏆 #${index + 1} ${team.team_name}</strong>
+                <br>
+                🔫 Kills: ${team.kills}
+                <br>
+                ⭐ Points: ${team.points}
+                <br><br>
+                <button onclick="deleteLeaderboard(${team.id})">
+                    🗑️ Delete
+                </button>
+            `;
+
+            leaderboardList.appendChild(div);
+        });
+
+    } catch (error) {
+        console.error(error);
+        leaderboardList.innerHTML = "❌ Server error";
+    }
+}
+
+
+leaderboardForm.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const token = sessionStorage.getItem("adminToken");
+
+    const team_name =
+        document.getElementById("leaderboardTeam").value;
+
+    const kills =
+        document.getElementById("leaderboardKills").value;
+
+    const points =
+        document.getElementById("leaderboardPoints").value;
+
+    const response = await fetch("/admin/leaderboard", {
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+
+        body: JSON.stringify({
+            team_name,
+            kills,
+            points
+        })
+    });
+
+    const result = await response.json();
+
+    alert(result.message);
+
+    if (result.success) {
+        leaderboardForm.reset();
+        loadLeaderboard();
+    }
+});
+
+
+async function deleteLeaderboard(id) {
+
+    if (!confirm("এই Team Leaderboard থেকে Delete করবেন?")) {
+        return;
+    }
+
+    const token = sessionStorage.getItem("adminToken");
+
+    const response = await fetch("/admin/leaderboard/" + id, {
+        method: "DELETE",
+
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    });
+
+    const result = await response.json();
+
+    alert(result.message);
+
+    if (result.success) {
+        loadLeaderboard();
+    }
+}
+
+
+loadLeaderboard();
+</script>
+
+</body>
+</html>

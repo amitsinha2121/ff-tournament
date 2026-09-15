@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FF Tournament - Notice Board</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+        }
+
+        header {
+            background: #1e293b;
+            padding: 18px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #38bdf8;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 15px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: #38bdf8;
+            text-decoration: none;
+        }
+
+        .notice {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+        }
+
+        .notice h2 {
+            margin-top: 0;
+            color: #facc15;
+        }
+
+        .notice p {
+            line-height: 1.6;
+        }
+
+        .info {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>📢 Notice Board</h1>
+    <p>FF Tournament Updates</p>
+</header>
+
+<div class="container">
+
+    <a href="/" class="back">← Home</a>
+
+    <div id="noticeList">
+        Loading notices...
+    </div>
+
+</div>
+
+<script>
+async function loadNotices() {
+
+    const noticeList = document.getElementById("noticeList");
+
+    try {
+
+        const response = await fetch("/notices");
+        const result = await response.json();
+
+        noticeList.innerHTML = "";
+
+        if (!result.data || result.data.length === 0) {
+
+            noticeList.innerHTML = `
+                <div class="empty">
+                    📢 এখন কোনো Notice নেই।
+                </div>
+            `;
+
+            return;
+        }
+
+        result.data.forEach(notice => {
+
+            const div = document.createElement("div");
+
+            div.className = "notice";
+
+            div.innerHTML = `
+                <h2>📢 ${notice.title}</h2>
+
+                <p>${notice.message}</p>
+
+                <div class="info">
+                    📅 Date:
+                    ${notice.tournament_date || "Not specified"}
+                </div>
+
+                <div class="info">
+                    ⏰ Time:
+                    ${notice.tournament_time || "Not specified"}
+                </div>
+            `;
+
+            noticeList.appendChild(div);
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        noticeList.innerHTML = `
+            <div class="empty">
+                ❌ Notice load করা যাচ্ছে না।
+            </div>
+        `;
+    }
+}
+
+loadNotices();
+</script>
+
+</body>
+</html>

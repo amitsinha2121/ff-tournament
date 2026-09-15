@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FF Tournament - Leaderboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+        }
+
+        header {
+            background: #1e293b;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #facc15;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 15px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #38bdf8;
+            text-decoration: none;
+        }
+
+        .team {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .rank {
+            font-size: 22px;
+            font-weight: bold;
+            color: #facc15;
+        }
+
+        .team-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+
+        .stats {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🏆 Leaderboard</h1>
+    <p>FF Tournament Ranking</p>
+</header>
+
+<div class="container">
+
+    <a href="/" class="back">← Home</a>
+
+    <div id="leaderboard">
+        Loading leaderboard...
+    </div>
+
+</div>
+
+<script>
+
+async function loadLeaderboard() {
+
+    const leaderboard =
+        document.getElementById("leaderboard");
+
+    try {
+
+        const response =
+            await fetch("/leaderboard");
+
+        const result =
+            await response.json();
+
+        leaderboard.innerHTML = "";
+
+        if (!result.data || result.data.length === 0) {
+
+            leaderboard.innerHTML = `
+                <div class="empty">
+                    🏆 এখনো কোনো Leaderboard data নেই।
+                </div>
+            `;
+
+            return;
+        }
+
+        result.data.forEach((team, index) => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "team";
+
+            div.innerHTML = `
+                <div class="rank">
+                    #${index + 1}
+                </div>
+
+                <div class="team-name">
+                    ${team.team_name}
+                </div>
+
+                <div class="stats">
+                    🔫 Kills: ${team.kills}
+                    <br>
+                    ⭐ Points: ${team.points}
+                </div>
+            `;
+
+            leaderboard.appendChild(div);
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        leaderboard.innerHTML = `
+            <div class="empty">
+                ❌ Leaderboard load করা যাচ্ছে না।
+            </div>
+        `;
+    }
+}
+
+loadLeaderboard();
+
+</script>
+
+</body>
+</html>

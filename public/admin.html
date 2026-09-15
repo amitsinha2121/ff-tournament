@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FF Tournament Admin Login</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-box {
+            width: 90%;
+            max-width: 380px;
+            background: #1c1c1c;
+            padding: 30px;
+            border-radius: 15px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #ff9800;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        #error {
+            color: #ff5555;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-box">
+        <h1>🔥 FF Tournament</h1>
+        <h2>Admin Login</h2>
+
+        <input type="text" id="username" placeholder="Username">
+
+        <input type="password" id="password" placeholder="Password">
+
+        <button onclick="login()">LOGIN</button>
+
+        <div id="error"></div>
+    </div>
+
+<script>
+    async function login() {
+
+        const username =
+            document.getElementById("username").value.trim();
+
+        const password =
+            document.getElementById("password").value;
+
+        const error =
+            document.getElementById("error");
+
+        error.innerText = "";
+
+        try {
+
+            const response = await fetch("/admin/login", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    username,
+                    password
+                })
+
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+
+                sessionStorage.setItem(
+                    "adminToken",
+                    result.token
+                );
+
+                window.location.href =
+                    "admin-panel.html";
+
+            } else {
+
+                error.innerText =
+                    "❌ Username বা Password ভুল!";
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+            error.innerText =
+                "❌ Server-এর সাথে যোগাযোগ করা যাচ্ছে না।";
+        }
+    }
+</script>
+</body>
+</html>

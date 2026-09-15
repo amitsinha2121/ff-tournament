@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FF Tournament - Player Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0b1020;
+            color: white;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff512f, #dd2476);
+            padding: 25px 15px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 25px auto;
+            padding: 15px;
+        }
+
+        .card {
+            background: #151c32;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #ffcc00;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #ff512f;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .info {
+            background: #202943;
+            padding: 14px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .label {
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .value {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: #555;
+        }
+
+        .approved {
+            background: #087f46;
+        }
+
+        .pending {
+            background: #9a6900;
+        }
+
+        .rejected {
+            background: #a71919;
+        }
+
+        .room {
+            background: #0e3b2e;
+            border: 1px solid #21d07a;
+        }
+
+        .password {
+            background: #39270c;
+            border: 1px solid #ffb000;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #result {
+            display: none;
+        }
+
+        #message {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            color: #ffcc00;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="header">
+
+        <h1>🔥 FF TOURNAMENT</h1>
+
+        <p>Player Dashboard</p>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <!-- SEARCH CARD -->
+
+        <div class="card">
+
+            <h2>🔎 Check Team Status</h2>
+
+            <p>
+                আপনার Captain UID লিখুন
+            </p>
+
+            <input
+                type="text"
+                id="uid"
+                placeholder="Captain UID"
+            >
+
+            <button onclick="searchTeam()">
+                SEARCH TEAM
+            </button>
+
+            <div id="message"></div>
+
+        </div>
+
+
+        <!-- TEAM INFORMATION -->
+
+        <div class="card" id="result">
+
+            <h2>🏆 Team Information</h2>
+
+
+            <div class="info">
+
+                <div class="label">
+                    Team Name
+                </div>
+
+                <div class="value"
+                     id="teamName">
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="label">
+                    Captain Name
+                </div>
+
+                <div class="value"
+                     id="captainName">
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="label">
+                    Captain UID
+                </div>
+
+                <div class="value"
+                     id="captainUid">
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="label">
+                    Registration Status
+                </div>
+
+                <div class="value">
+
+                    <span id="status"
+                          class="status">
+                        -
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="label">
+                    Admin Note
+                </div>
+
+                <div class="value"
+                     id="adminNote">
+                    -
+                </div>
+
+            </div>
+
+
+            <!-- ROOM INFORMATION -->
+
+            <div id="roomSection"
+                 class="hidden">
+
+                <h2>🎮 Room Information</h2>
+
+
+                <div class="info room">
+
+                    <div class="label">
+                        Room ID
+                    </div>
+
+                    <div class="value"
+                         id="roomId">
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="info password">
+
+                    <div class="label">
+                        Room Password
+                    </div>
+
+                    <div class="value"
+                         id="roomPassword">
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="info">
+
+                    <div class="label">
+                        Tournament Status
+                    </div>
+
+                    <div class="value"
+                         id="tournamentStatus">
+                        -
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div id="waitingMessage"
+                 class="info">
+
+                🔒 Room ID এবং Password
+                Admin Approval-এর পরে দেখা যাবে।
+
+            </div>
+
+        </div>
+
+
+        <a href="index.html"
+           class="back">
+
+            ← Back to Home
+
+        </a>
+
+    </div>
+
+
+    <script>
+
+
+        async function searchTeam() {
+
+
+            const uid =
+                document
+                .getElementById("uid")
+                .value
+                .trim();
+
+
+            const message =
+                document
+                .getElementById("message");
+
+
+            const result =
+                document
+                .getElementById("result");
+
+
+            if (!uid) {
+
+                message.innerText =
+                    "❌ Captain UID দিন";
+
+                result.style.display =
+                    "none";
+
+                return;
+
+            }
+
+
+            message.innerText =
+                "⏳ Searching...";
+
+
+            try {
+
+
+                const response =
+                    await fetch(
+                        "/player/" +
+                        encodeURIComponent(uid)
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok ||
+                    !data.success) {
+
+
+                    message.innerText =
+                        "❌ " +
+                        (
+                            data.message ||
+                            "Team পাওয়া যায়নি"
+                        );
+
+
+                    result.style.display =
+                        "none";
+
+
+                    return;
+
+                }
+
+
+                const team =
+                    data.data;
+
+
+                document
+                    .getElementById("teamName")
+                    .innerText =
+                    team.team_name || "-";
+
+
+                document
+                    .getElementById("captainName")
+                    .innerText =
+                    team.captain_name || "-";
+
+
+                document
+                    .getElementById("captainUid")
+                    .innerText =
+                    team.captain_uid || "-";
+
+
+                document
+                    .getElementById("adminNote")
+                    .innerText =
+                    team.admin_note ||
+                    "No note";
+
+
+                const status =
+                    document
+                    .getElementById("status");
+
+
+                const teamStatus =
+                    team.status || "Pending";
+
+
+                status.innerText =
+                    teamStatus;
+
+
+                status.className =
+                    "status";
+
+
+                if (teamStatus === "Approved") {
+
+                    status.classList.add(
+                        "approved"
+                    );
+
+                }
+
+                else if (
+                    teamStatus === "Rejected"
+                ) {
+
+                    status.classList.add(
+                        "rejected"
+                    );
+
+                }
+
+                else {
+
+                    status.classList.add(
+                        "pending"
+                    );
+
+                }
+
+
+                /*
+                 * Room information
+                 * শুধু Approved team-এর জন্য
+                 */
+
+
+                const roomSection =
+                    document
+                    .getElementById(
+                        "roomSection"
+                    );
+
+
+                const waitingMessage =
+                    document
+                    .getElementById(
+                        "waitingMessage"
+                    );
+
+
+                if (teamStatus === "Approved") {
+
+
+                    const settingsResponse =
+                    await fetch(
+    "/tournament-settings/" + uid
+);
+
+                    const settings =
+                        await settingsResponse.json();
+
+
+                    if (
+                        settings.success &&
+                        settings.data
+                    ) {
+
+
+                        document
+                            .getElementById("roomId")
+                            .innerText =
+                            settings.data.room_id ||
+                            "Not available";
+
+
+                        document
+                            .getElementById("roomPassword")
+                            .innerText =
+                            settings.data.room_password ||
+                            "Not available";
+
+
+                        document
+                            .getElementById(
+                                "tournamentStatus"
+                            )
+                            .innerText =
+                            settings.data
+                            .tournament_status ||
+                            "Registration Open";
+
+
+                        roomSection.classList.remove(
+                            "hidden"
+                        );
+
+
+                        waitingMessage.classList.add(
+                            "hidden"
+                        );
+
+                    }
+
+
+                }
+
+                else {
+
+
+                    roomSection.classList.add(
+                        "hidden"
+                    );
+
+
+                    waitingMessage.classList.remove(
+                        "hidden"
+                    );
+
+                }
+
+
+                result.style.display =
+                    "block";
+
+
+                message.innerText =
+                    "✅ Team পাওয়া গেছে!";
+
+
+            }
+
+            catch (error) {
+
+
+                console.error(error);
+
+
+                message.innerText =
+                    "❌ Server-এর সাথে যোগাযোগ করা যাচ্ছে না।";
+
+
+                result.style.display =
+                    "none";
+
+            }
+
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>

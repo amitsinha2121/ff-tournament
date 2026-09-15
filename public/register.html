@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FF Tournament Registration</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #101010;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .box {
+            max-width: 450px;
+            margin: auto;
+            background: #1d1d1d;
+            padding: 25px;
+            border-radius: 18px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff4500;
+            margin-bottom: 25px;
+        }
+
+        h3 {
+            color: #ff8c00;
+            margin-top: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            margin: 7px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 18px;
+            border: none;
+            border-radius: 10px;
+            background: #ff4500;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .back {
+            background: #333;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h1>🏆 Team Registration</h1>
+
+    <form id="registrationForm">
+
+        <h3>👑 Captain</h3>
+
+        <input id="team_name"
+               type="text"
+               placeholder="Team Name"
+               required>
+
+        <input id="captain_name"
+               type="text"
+               placeholder="Captain Name"
+               required>
+
+        <input id="captain_uid"
+               type="text"
+               placeholder="Captain UID"
+               required>
+
+
+        <h3>🎮 Player 2</h3>
+
+        <input id="player2_name"
+               type="text"
+               placeholder="Player 2 Name"
+               required>
+
+        <input id="player2_uid"
+               type="text"
+               placeholder="Player 2 UID"
+               required>
+
+
+        <h3>🎮 Player 3</h3>
+
+        <input id="player3_name"
+               type="text"
+               placeholder="Player 3 Name"
+               required>
+
+        <input id="player3_uid"
+               type="text"
+               placeholder="Player 3 UID"
+               required>
+
+
+        <h3>🎮 Player 4</h3>
+
+        <input id="player4_name"
+               type="text"
+               placeholder="Player 4 Name"
+               required>
+
+        <input id="player4_uid"
+               type="text"
+               placeholder="Player 4 UID"
+               required>
+
+
+        <h3>📱 Contact & Payment</h3>
+
+        <input id="phone"
+               type="tel"
+               placeholder="WhatsApp / Phone Number"
+               required>
+
+        <input id="transaction_id"
+               type="text"
+               placeholder="Payment Transaction ID">
+
+
+        <button type="submit">
+            🔥 SUBMIT REGISTRATION
+        </button>
+
+    </form>
+
+    <div id="message"></div>
+
+    <button class="back" onclick="location.href='/'">
+        ← BACK TO HOME
+    </button>
+
+</div>
+
+
+<script>
+
+const form = document.getElementById("registrationForm");
+const message = document.getElementById("message");
+
+form.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    message.textContent = "⏳ Registration হচ্ছে...";
+
+    const registrationData = {
+
+        team_name: document.getElementById("team_name").value,
+
+        captain_name:
+            document.getElementById("captain_name").value,
+
+        captain_uid:
+            document.getElementById("captain_uid").value,
+
+        player2_name:
+            document.getElementById("player2_name").value,
+
+        player2_uid:
+            document.getElementById("player2_uid").value,
+
+        player3_name:
+            document.getElementById("player3_name").value,
+
+        player3_uid:
+            document.getElementById("player3_uid").value,
+
+        player4_name:
+            document.getElementById("player4_name").value,
+
+        player4_uid:
+            document.getElementById("player4_uid").value,
+
+        phone:
+            document.getElementById("phone").value,
+
+        transaction_id:
+            document.getElementById("transaction_id").value
+    };
+
+
+    try {
+
+        const response = await fetch("/register", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(registrationData)
+
+        });
+
+
+        const result = await response.json();
+
+
+        if (result.success) {
+
+            message.textContent =
+                "✅ Registration সফল হয়েছে!";
+
+            form.reset();
+
+        } else {
+
+            message.textContent =
+                "❌ " + result.message;
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.textContent =
+            "❌ Server-এর সাথে connection হয়নি";
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
