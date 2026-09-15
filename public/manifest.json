@@ -1,0 +1,13 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "FF Tournament",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "FF Tournament",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "id": "ff-tournament",
+  "description": "Free Fire Tournament Registration and Management App"
+}
