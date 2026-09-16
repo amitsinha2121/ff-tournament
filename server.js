@@ -79,7 +79,64 @@ function requireAdmin(req, res, next) {
 // ===============================
 // TEAM REGISTRATION
 // ===============================
+const recentRegistrations = new Map();
 
+async function isBlocked(value) {
+    const { data, error } = await supabase
+        .from("registration_blocks")
+        .select("*")
+        .eq("block_type", value.type)
+        .eq("block_value", value.value)
+        .maybeSingle();
+
+    if (error) {
+        console.error("Block Check Error:", error);
+        return false;
+    }
+
+    if (!data) return false;
+
+    if (!data.blocked_until) return true;
+
+    if (new Date(data.blocked_until) <= new Date()) {
+        await supabase
+            .from("registration_blocks")
+            .delete()
+            .eq("id", data.id);
+
+        return false;
+    }
+
+    return true;
+}
+
+async function createBlock(type, value, reason, minutes = null) {
+    let blockedUntil = null;
+
+    if (minutes) {
+        blockedUntil = new Date(
+            Date.now() + minutes * 60 * 1000
+        ).toISOString();
+    }
+
+    const { error } = await supabase
+        .from("registration_blocks")
+        .upsert(
+            [{
+                block_type: type,
+                block_value: value,
+                reason,
+                blocked_until: blockedUntil
+            }],
+            {
+                onConflict: "block_type,block_value"
+            }
+        );
+
+    if (error) {
+        console.error("Create Block Error:", error);
+    }
+}
 app.post("/register", async (req, res) => {
 
     try {
@@ -97,7 +154,85 @@ app.post("/register", async (req, res) => {
             phone,
             transaction_id
         } = req.body;
+        if (await isBlocked({
+            type: "uid",
+            value: captain_uid
+        })) {
+            return res.status(403).json({
+                success: false,
+                message: "🚫 এই UID বর্তমানে blocked!"
+            });
+        }
 
+        if (await isBlocked({
+            type: "phone",
+            value: phone
+        })) {
+            return res.status(403).json({
+                success: false,
+                message: "🚫 এই Phone Number বর্তমানে blocked!"
+            });
+        }
+
+        const uidKey = captain_uid.trim();
+        const phoneKey = phone.trim();
+
+        const now = Date.now();
+
+        const lastAttempt = recentRegistrations.get(uidKey);
+
+        if (lastAttempt && now - lastAttempt < 30000) {
+
+            await createBlock(
+                "uid",
+                uidKey,
+                "Too many registration attempts",
+                10
+            );
+
+            return res.status(429).json({
+                success: false,
+                message: "🚫 Too many attempts! UID 10 মিনিটের জন্য blocked."
+            });
+        }
+
+        recentRegistrations.set(uidKey, now);
+
+        const lastPhoneAttempt =
+            recentRegistrations.get("phone:" + phoneKey);
+
+        if (
+            lastPhoneAttempt &&
+            now - lastPhoneAttempt < 30000
+        ) {
+
+            await createBlock(
+                "phone",
+                phoneKey,
+                "Too many registration attempts",
+                10
+            );
+
+            return res.status(429).json({
+                success: false,
+                message:
+                    "🚫 Too many attempts! Phone 10 মিনিটের জন্য blocked."
+            });
+        }
+
+        recentRegistrations.set(
+            "phone:" + phoneKey,
+            now
+        );
+
+        setTimeout(() => {
+            recentRegistrations.delete(
+                "phone:" + phoneKey
+            );
+        }, 60000);
+        setTimeout(() => {
+            recentRegistrations.delete(uidKey);
+        }, 60000);
         const { data, error } = await supabase
             .from("tournament_registrations")
             .insert([
@@ -143,7 +278,91 @@ app.post("/register", async (req, res) => {
         });
     }
 });
+app.get(
+    "/admin/registration-blocks",
+    requireAdmin,
+    async (req, res) => {
 
+        try {
+
+            const { data, error } = await supabase
+                .from("registration_blocks")
+                .select("*")
+                .order("created_at", {
+                    ascending: false
+                });
+
+            if (error) {
+                console.error(
+                    "Registration Blocks Error:",
+                    error
+                );
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Blocked users load হয়নি"
+                });
+            }
+
+            res.json({
+                success: true,
+                data: data || []
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                success: false,
+                message: "Server error"
+            });
+        }
+    }
+);
+
+app.delete(
+    "/admin/registration-blocks/:id",
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const { id } = req.params;
+
+            const { error } = await supabase
+                .from("registration_blocks")
+                .delete()
+                .eq("id", id);
+
+            if (error) {
+                console.error(
+                    "Unblock Error:",
+                    error
+                );
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Unblock করা যায়নি"
+                });
+            }
+
+            res.json({
+                success: true,
+                message: "✅ User successfully unblocked!"
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                success: false,
+                message: "Server error"
+            });
+        }
+    }
+);
 // ===============================
 // PLAYER DASHBOARD
 // ===============================
