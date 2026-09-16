@@ -209,7 +209,14 @@
     <!-- REGISTERED TEAMS -->
     <!-- ========================= -->
 <hr>
-
+<div style="margin:15px 0;">
+    <button
+        onclick="deleteAllRegistrations()"
+        style="background:#d32f2f;color:white;padding:12px 18px;border:0;border-radius:8px;font-weight:bold;cursor:pointer;"
+    >
+        🗑️ DELETE ALL REGISTRATIONS
+    </button>
+</div>
 <h2>🏆 Leaderboard Management</h2>
 
 <form id="leaderboardForm">
@@ -249,7 +256,14 @@
     Loading leaderboard...
 </div>
     <h2>👥 Registered Teams</h2>
-
+<div style="margin:15px 0;">
+    <button
+        onclick="deleteAllRegistrations()"
+        style="background:#d32f2f;color:white;padding:12px 18px;border:0;border-radius:8px;font-weight:bold;cursor:pointer;"
+    >
+        🗑️ DELETE ALL REGISTRATIONS
+    </button>
+</div>
     <div id="teams">
         Loading...
     </div>
@@ -792,7 +806,45 @@ async function deleteNotice(id) {
         loadNotices();
     }
 }
+async function deleteAllRegistrations() {
 
+    const confirmDelete = confirm(
+        "⚠️ সব registration কি সত্যিই DELETE করতে চান?"
+    );
+
+    if (!confirmDelete) {
+        return;
+    }
+
+    const token = sessionStorage.getItem("adminToken");
+
+    try {
+
+        const response = await fetch(
+            "/admin/registrations/all",
+            {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            }
+        );
+
+        const result = await response.json();
+
+        alert(result.message);
+
+        if (result.success) {
+            loadTeams();
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("❌ Server error!");
+    }
+}
 loadNotices();
 // ================= LEADERBOARD =================
 

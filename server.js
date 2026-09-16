@@ -199,7 +199,69 @@ app.get("/player/:uid", async (req, res) => {
 // ===============================
 // ADMIN REGISTRATIONS
 // ===============================
+// ===============================
+// DELETE ALL REGISTRATIONS
+// ===============================
 
+app.delete(
+    "/admin/registrations/all",
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const { data, error } = await supabase
+                .from("tournament_registrations")
+                .select("id");
+
+            if (error) {
+                console.error("Fetch registrations error:", error);
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Registration fetch failed"
+                });
+            }
+
+            if (!data || data.length === 0) {
+                return res.json({
+                    success: true,
+                    message: "কোনো registration নেই"
+                });
+            }
+
+            const ids = data.map(row => row.id);
+
+            const { error: deleteError } = await supabase
+                .from("tournament_registrations")
+                .delete()
+                .in("id", ids);
+
+            if (deleteError) {
+                console.error("Delete registrations error:", deleteError);
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Registration delete failed"
+                });
+            }
+
+            res.json({
+                success: true,
+                message: `${ids.length}টি registration delete হয়েছে`
+            });
+
+        } catch (error) {
+
+            console.error("Delete all error:", error);
+
+            res.status(500).json({
+                success: false,
+                message: "Server error"
+            });
+        }
+    }
+);
 app.get(
     "/admin/registrations",
     requireAdmin,
