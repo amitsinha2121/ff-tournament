@@ -1,381 +1,1371 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
+
+<meta charset="UTF-8">
+
 <link rel="manifest" href="/manifest.json">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>FF Tournament</title>
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<meta name="theme-color" content="#080808">
+
+<title>FF Tournament | LAMUI GAMING</title>
+
+<style>
+
+/* =========================
+   RESET
+========================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
 
 body {
     font-family: Arial, sans-serif;
     background:
-        radial-gradient(circle at top, #2b0d00 0%, #101010 45%, #050505 100%);
-    color: white;
+        radial-gradient(
+            circle at 50% -10%,
+            #4a1600 0%,
+            #1b0802 22%,
+            #090909 55%,
+            #030303 100%
+        );
+    color: #fff;
     min-height: 100vh;
     overflow-x: hidden;
 }
-header {
-    background: linear-gradient(135deg, #ff4500, #ff1e00, #9d0000);
-    padding: 22px 15px;
-    text-align: center;
-    box-shadow: 0 0 25px rgba(255, 69, 0, 0.55);
-    position: relative;
-    overflow: hidden;
-}
 
-header::after {
-    content: "";
-    position: absolute;
-    width: 180px;
-    height: 180px;
-    background: rgba(255,255,255,0.12);
-    border-radius: 50%;
-    top: -100px;
-    right: -50px;
-    animation: headerGlow 4s infinite alternate;
-}
 
-@keyframes headerGlow {
-    from {
-        transform: scale(1);
-    }
-    to {
-        transform: scale(1.4);
-    }
-}
-        header h1 {
-            font-size: 28px;
-        }
+/* =========================
+   BACKGROUND GLOW
+========================= */
 
-.hero {
-    padding: 45px 20px;
-    text-align: center;
-    animation: heroIn 0.8s ease-out;
-}
-
-@keyframes heroIn {
-    from {
-        opacity: 0;
-        transform: translateY(25px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-.hero h2 {
-    font-size: 30px;
-    margin-bottom: 12px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    background: linear-gradient(90deg, #ffffff, #ff5a00, #ffffff);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: textMove 3s linear infinite;
-}
-
-@keyframes textMove {
-    to {
-        background-position: 200% center;
-    }
-}
-.hero p {
-    color: #d6d6d6;
-    font-size: 15px;
-    line-height: 1.7;
-    max-width: 600px;
-    margin: 0 auto;
-    opacity: 0.9;
-    animation: paragraphIn 1.2s ease-out;
-}
-
-@keyframes paragraphIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 0.9;
-        transform: translateY(0);
-    }
-}
-.hero h3 { color: #ff4500; font-size: 22px; margin: 8px 0;
-}
-.tournament {
-    margin: 20px;
-    padding: 22px;
-    background: linear-gradient(145deg, #1d1d1d, #111111);
-    border: 1px solid rgba(255, 69, 0, 0.35);
-    border-radius: 18px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-    transition: 0.35s ease;
-    animation: cardIn 0.8s ease-out;
-}
-
-.tournament:hover {
-    transform: translateY(-6px);
-    border-color: #ff4500;
-    box-shadow: 0 0 25px rgba(255, 69, 0, 0.35);
-}
-
-@keyframes cardIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-.tournament h3 {
-    color: #ff5a00;
-    margin-bottom: 12px;
-    font-size: 22px;
-    text-shadow: 0 0 10px rgba(255, 69, 0, 0.7);
-    animation: titleGlow 2s infinite alternate;
-}
-
-@keyframes titleGlow {
-    from {
-        text-shadow: 0 0 5px rgba(255, 69, 0, 0.4);
-    }
-
-    to {
-        text-shadow: 0 0 18px rgba(255, 69, 0, 0.9);
-    }
-}
-        .info {
-            margin: 8px 0;
-        }
-button {
-    width: 100%;
-    padding: 14px;
-    margin-top: 15px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #ff5a00, #ff1e00);
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 0 15px rgba(255, 69, 0, 0.35);
-    transition: 0.25s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0 25px rgba(255, 69, 0, 0.7);
-}
-
-button:active {
-    transform: scale(0.96);
-}
-
-button::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 60%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.18);
-    transform: skewX(-25deg);
-    transition: 0.5s;
-}
-
-button:hover::after {
-    left: 130%;
-}
-       .register-button {
-    display: block;
-    width: fit-content;
-    margin: 15px auto;
-    padding: 12px 28px;
-    background: #22c55e;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-}
-.status-check {
-    margin: 20px;
-    padding: 22px;
-    background: linear-gradient(145deg, #1d1d1d, #101010);
-    border: 1px solid rgba(255, 69, 0, 0.3);
-    border-radius: 18px;
-    text-align: center;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
-    transition: 0.3s ease;
-}
-
-.status-check:hover {
-    transform: translateY(-4px);
-    border-color: #ff4500;
-    box-shadow: 0 0 22px rgba(255, 69, 0, 0.3);
-}
-.status-check h3 {
-    color: #ff4500;
-    margin-bottom: 15px;
-}
-
-.status-check input {
-    width: 100%;
-    padding: 13px;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    outline: none;
-}
-
-.status-check button {
-    width: 100%;
-    margin-top: 12px;
-}
-
-#statusMessage {
-    margin-top: 15px;
-    font-size: 16px;
-    font-weight: bold;
-}
-body::before {
-    content: "";
-    position: fixed;
-    width: 280px;
-    height: 280px;
-    background: rgba(255, 69, 0, 0.12);
-    border-radius: 50%;
-    filter: blur(70px);
-    top: 20%;
-    left: -120px;
-    pointer-events: none;
-    animation: floatingGlow 7s ease-in-out infinite alternate;
-    z-index: -1;
-}
-
+body::before,
 body::after {
     content: "";
     position: fixed;
-    width: 250px;
-    height: 250px;
-    background: rgba(255, 0, 0, 0.10);
     border-radius: 50%;
-    filter: blur(70px);
-    bottom: 10%;
-    right: -100px;
+    filter: blur(90px);
     pointer-events: none;
-    animation: floatingGlow 8s ease-in-out infinite alternate-reverse;
-    z-index: -1;
+    z-index: -2;
+}
+
+body::before {
+    width: 330px;
+    height: 330px;
+    background: rgba(255, 69, 0, 0.18);
+    top: 8%;
+    left: -150px;
+    animation: floatingGlow 8s ease-in-out infinite alternate;
+}
+
+body::after {
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 20, 0, 0.15);
+    bottom: 5%;
+    right: -140px;
+    animation: floatingGlow 10s ease-in-out infinite alternate-reverse;
 }
 
 @keyframes floatingGlow {
+
     from {
         transform: translateY(-30px) scale(1);
     }
 
     to {
-        transform: translateY(40px) scale(1.25);
+        transform: translateY(50px) scale(1.25);
     }
 }
+
+
+/* =========================
+   TOP HEADER
+========================= */
+
+header {
+    position: relative;
+    overflow: hidden;
+
+    padding: 18px 15px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff5a00,
+            #ff2400,
+            #850000
+        );
+
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+
+    box-shadow:
+        0 8px 35px rgba(255,69,0,0.35);
+}
+
+header::before {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.12);
+
+    top: -110px;
+    left: -50px;
+
+    animation: headerOrb 5s infinite alternate;
+}
+
+header::after {
+    content: "";
+
+    position: absolute;
+
+    width: 160px;
+    height: 160px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.10);
+
+    right: -60px;
+    bottom: -110px;
+
+    animation: headerOrb 4s infinite alternate-reverse;
+}
+
+@keyframes headerOrb {
+
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.5);
+    }
+}
+
+header h1 {
+    position: relative;
+    z-index: 2;
+
+    font-size: 25px;
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    text-shadow:
+        0 2px 8px rgba(0,0,0,0.5);
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    position: relative;
+
+    text-align: center;
+
+    padding: 48px 20px 35px;
+
+    animation: heroIn 0.8s ease-out;
+}
+
+@keyframes heroIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-badge {
+
+    display: inline-block;
+
+    padding: 7px 14px;
+
+    margin-bottom: 16px;
+
+    border: 1px solid rgba(255,90,0,0.55);
+
+    border-radius: 30px;
+
+    background:
+        rgba(255,69,0,0.10);
+
+    color: #ff7133;
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    letter-spacing: 1.5px;
+
+    box-shadow:
+        0 0 18px rgba(255,69,0,0.18);
+}
+
+.hero h2 {
+
+    font-size: clamp(32px, 9vw, 52px);
+
+    line-height: 1.05;
+
+    font-weight: 1000;
+
+    letter-spacing: -1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ffffff,
+            #ff7a00,
+            #ff2600,
+            #ffffff
+        );
+
+    background-size: 300% auto;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+
+    animation:
+        gradientMove 4s linear infinite;
+}
+
+@keyframes gradientMove {
+
+    to {
+        background-position: 300% center;
+    }
+}
+
+.hero p {
+
+    margin-top: 14px;
+
+    color: #bdbdbd;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+}
+
+.hero .gaming-name {
+
+    margin-top: 5px;
+
+    font-size: 23px;
+
+    font-weight: 900;
+
+    color: #ff5a00;
+
+    text-shadow:
+        0 0 10px rgba(255,69,0,0.8),
+        0 0 25px rgba(255,69,0,0.35);
+}
+
+
+/* =========================
+   HERO STATS
+========================= */
+
+.stats {
+
+    max-width: 600px;
+
+    margin: 28px auto 0;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 10px;
+}
+
+.stat {
+
+    padding: 14px 7px;
+
+    background:
+        rgba(255,255,255,0.045);
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    border-radius: 15px;
+
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+        inset 0 1px rgba(255,255,255,0.04);
+}
+
+.stat strong {
+
+    display: block;
+
+    color: #ff6200;
+
+    font-size: 19px;
+
+    margin-bottom: 4px;
+}
+
+.stat span {
+
+    color: #999;
+
+    font-size: 11px;
+}
+
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+
+.container {
+
+    width: min(94%, 720px);
+
+    margin: auto;
+
+    padding-bottom: 35px;
+}
+
+
+/* =========================
+   QUICK ACTIONS
+========================= */
+
+.quick-actions {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+.action-card {
+
+    text-decoration: none;
+
+    color: white;
+
+    padding: 18px 12px;
+
+    text-align: center;
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.025)
+        );
+
+    border:
+        1px solid rgba(255,69,0,0.25);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.35);
+
+    transition: 0.25s ease;
+}
+
+.action-card:hover {
+
+    transform: translateY(-4px);
+
+    border-color: #ff5500;
+
+    box-shadow:
+        0 0 25px rgba(255,69,0,0.25);
+}
+
+.action-icon {
+
+    display: block;
+
+    font-size: 27px;
+
+    margin-bottom: 7px;
+}
+
+.action-card strong {
+
+    display: block;
+
+    font-size: 14px;
+}
+
+.action-card small {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: #999;
+
+    font-size: 10px;
+}
+
+
+/* =========================
+   MAIN TOURNAMENT CARD
+========================= */
+
+.tournament {
+
+    position: relative;
+
+    padding: 24px;
+
+    margin-top: 18px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(35,35,35,0.95),
+            rgba(10,10,10,0.95)
+        );
+
+    border:
+        1px solid rgba(255,69,0,0.30);
+
+    box-shadow:
+        0 15px 45px rgba(0,0,0,0.55),
+        inset 0 1px rgba(255,255,255,0.05);
+
+    overflow: hidden;
+}
+
+.tournament::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 160px;
+    height: 160px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,69,0,0.09);
+
+    filter: blur(40px);
+
+    right: -70px;
+    top: -70px;
+}
+
+.tournament-title {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 20px;
+}
+
+.title-icon {
+
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff6500,
+            #d90000
+        );
+
+    font-size: 25px;
+
+    box-shadow:
+        0 0 20px rgba(255,69,0,0.35);
+}
+
+.tournament-title h3 {
+
+    color: #fff;
+
+    font-size: 20px;
+
+    margin-bottom: 4px;
+}
+
+.tournament-title p {
+
+    color: #888;
+
+    font-size: 12px;
+}
+
+
+/* =========================
+   REGISTER BUTTON
+========================= */
+
+.register-button {
+
+    display: block;
+
+    width: 100%;
+
+    padding: 17px;
+
+    margin: 10px 0 13px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff6500,
+            #ff2600,
+            #b80000
+        );
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: 900;
+
+    letter-spacing: 0.5px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(255,69,0,0.30);
+
+    transition: 0.25s ease;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+.register-button:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 0 30px rgba(255,69,0,0.60);
+}
+
+.register-button:active {
+
+    transform: scale(0.97);
+}
+
+.register-button::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -120%;
+
+    width: 70%;
+    height: 100%;
+
+    background:
+        rgba(255,255,255,0.20);
+
+    transform:
+        skewX(-25deg);
+
+    transition: 0.6s;
+}
+
+.register-button:hover::after {
+
+    left: 130%;
+}
+
+
+/* =========================
+   STATUS CHECK
+========================= */
+
+.status-check {
+
+    margin-top: 18px;
+
+    padding: 20px;
+
+    border-radius: 17px;
+
+    background:
+        rgba(255,255,255,0.035);
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+}
+
+.status-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 15px;
+}
+
+.status-header .icon {
+
+    font-size: 24px;
+}
+
+.status-header h3 {
+
+    color: #ff5a00;
+
+    font-size: 17px;
+}
+
+.status-header p {
+
+    color: #777;
+
+    font-size: 11px;
+
+    margin-top: 3px;
+}
+
+.status-check input {
+
+    width: 100%;
+
+    padding: 14px;
+
+    border:
+        1px solid rgba(255,255,255,0.10);
+
+    border-radius: 11px;
+
+    outline: none;
+
+    background: #111;
+
+    color: white;
+
+    font-size: 15px;
+
+    transition: 0.2s;
+}
+
+.status-check input:focus {
+
+    border-color: #ff5500;
+
+    box-shadow:
+        0 0 15px rgba(255,69,0,0.15);
+}
+
+.status-check button {
+
+    width: 100%;
+
+    padding: 13px;
+
+    margin-top: 10px;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background: #202020;
+
+    color: #ff6500;
+
+    border:
+        1px solid rgba(255,69,0,0.30);
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.status-check button:hover {
+
+    background: #ff4500;
+
+    color: white;
+}
+
+#statusMessage {
+
+    white-space: pre-line;
+
+    margin-top: 15px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    text-align: center;
+}
+
+
+/* =========================
+   INFO SECTION
+========================= */
+
+.info-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 12px;
+
+    margin-top: 18px;
+}
+
+.info-box {
+
+    padding: 18px 14px;
+
+    text-align: center;
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,0.055),
+            rgba(255,255,255,0.018)
+        );
+
+    border:
+        1px solid rgba(255,255,255,0.07);
+
+    transition: 0.25s;
+}
+
+.info-box:hover {
+
+    border-color:
+        rgba(255,69,0,0.45);
+
+    transform: translateY(-3px);
+}
+
+.info-box .big {
+
+    display: block;
+
+    font-size: 27px;
+
+    margin-bottom: 7px;
+}
+
+.info-box strong {
+
+    display: block;
+
+    color: #eee;
+
+    font-size: 14px;
+}
+
+.info-box span {
+
+    display: block;
+
+    color: #777;
+
+    font-size: 11px;
+
+    margin-top: 4px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+
+    margin-top: 20px;
+
+    padding: 25px 15px;
+
+    text-align: center;
+
+    border-top:
+        1px solid rgba(255,255,255,0.07);
+
+    background:
+        rgba(0,0,0,0.35);
+}
+
+footer strong {
+
+    color: #ff5a00;
+
+    font-size: 15px;
+}
+
+footer p {
+
+    color: #666;
+
+    margin-top: 7px;
+
+    font-size: 11px;
+}
+
+.footer-line {
+
+    width: 60px;
+
+    height: 2px;
+
+    margin: 12px auto;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #ff4500,
+            transparent
+        );
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 430px) {
+
+    .hero {
+        padding-top: 38px;
+    }
+
+    .hero h2 {
+        font-size: 34px;
+    }
+
+    .stats {
+        gap: 7px;
+    }
+
+    .stat {
+        padding: 12px 5px;
+    }
+
+    .tournament {
+        padding: 19px;
+    }
+}
+
 </style>
+
 </head>
+
 
 <body>
 
-    <header>
-        <h1>🔥 FF TOURNAMENT</h1>
-    </header>
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <h1>🔥 FF TOURNAMENT</h1>
+
+</header>
+
+
+<!-- =========================
+     HERO
+========================= -->
 
 <section class="hero">
-    <h2>Free Fire Tournament</h2>
-    <p>Organized by</p>
-    <h3>LAMUI GAMING</h3>
-    <p>Join • Compete • Win 🏆</p>
+
+    <div class="hero-badge">
+        ⚡ OFFICIAL ESPORTS PLATFORM
+    </div>
+
+    <h2>
+        FREE FIRE<br>
+        TOURNAMENT
+    </h2>
+
+    <p>
+        Organized & Powered by
+    </p>
+
+    <div class="gaming-name">
+        🔥 LAMUI GAMING
+    </div>
+
+    <p>
+        Join • Compete • Dominate • Win 🏆
+    </p>
+
+
+    <!-- STATS -->
+
+    <div class="stats">
+
+        <div class="stat">
+            <strong>🎮</strong>
+            <span>COMPETE</span>
+        </div>
+
+        <div class="stat">
+            <strong>🏆</strong>
+            <span>WIN</span>
+        </div>
+
+        <div class="stat">
+            <strong>🔥</strong>
+            <span>ESPORTS</span>
+        </div>
+
+    </div>
+
 </section>
-    <div class="tournament">
-<a href="/notices.html" class="notice-button">
-    📢 Notice Board
-</a>
-<a href="/leaderboard.html" class="notice-button">
-    🏆 Leaderboard
-</a>
-<button class="register-button" onclick="location.href='register.html'">
-    REGISTER NOW
-</button>
-<div class="status-check">
-    <h3>🔎 Registration Status</h3>
 
-    <input
-        type="text"
-        id="statusUid"
-        placeholder="Enter Captain UID"
-    >
 
-    <button onclick="checkRegistration()">
-        CHECK STATUS
-    </button>
+<!-- =========================
+     MAIN
+========================= -->
 
-    <p id="statusMessage"></p>
-</div>
-  </div>
+<main class="container">
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="quick-actions">
+
+        <a
+            href="/notices.html"
+            class="action-card"
+        >
+
+            <span class="action-icon">
+                📢
+            </span>
+
+            <strong>
+                Notice Board
+            </strong>
+
+            <small>
+                Latest Updates
+            </small>
+
+        </a>
+
+
+        <a
+            href="/leaderboard.html"
+            class="action-card"
+        >
+
+            <span class="action-icon">
+                🏆
+            </span>
+
+            <strong>
+                Leaderboard
+            </strong>
+
+            <small>
+                Top Players
+            </small>
+
+        </a>
+
+    </div>
+
+
+    <!-- TOURNAMENT -->
+
+    <section class="tournament">
+
+        <div class="tournament-title">
+
+            <div class="title-icon">
+                ⚔️
+            </div>
+
+            <div>
+
+                <h3>
+                    Join The Battle
+                </h3>
+
+                <p>
+                    Register your squad and compete
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- REGISTER -->
+
+        <button
+            class="register-button"
+            onclick="location.href='register.html'"
+        >
+            🔥 REGISTER YOUR TEAM
+        </button>
+
+
+        <!-- STATUS -->
+
+        <div class="status-check">
+
+            <div class="status-header">
+
+                <div class="icon">
+                    🔎
+                </div>
+
+                <div>
+
+                    <h3>
+                        Registration Status
+                    </h3>
+
+                    <p>
+                        Check your team application
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <input
+                type="text"
+                id="statusUid"
+                placeholder="Enter Captain UID"
+            >
+
+
+            <button
+                onclick="checkRegistration()"
+            >
+                CHECK STATUS
+            </button>
+
+
+            <p id="statusMessage"></p>
+
+        </div>
+
+    </section>
+
+
+    <!-- INFORMATION -->
+
+    <div class="info-grid">
+
+        <div class="info-box">
+
+            <span class="big">
+                👥
+            </span>
+
+            <strong>
+                TEAM VS TEAM
+            </strong>
+
+            <span>
+                Competitive Battles
+            </span>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <span class="big">
+                🎯
+            </span>
+
+            <strong>
+                FAIR PLAY
+            </strong>
+
+            <span>
+                Competitive Environment
+            </span>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <span class="big">
+                🥇
+            </span>
+
+            <strong>
+                TOP RANKINGS
+            </strong>
+
+            <span>
+                Leaderboard System
+            </span>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <span class="big">
+                📢
+            </span>
+
+            <strong>
+                LIVE UPDATES
+            </strong>
+
+            <span>
+                Tournament Notices
+            </span>
+
+        </div>
+
+    </div>
+
+
+</main>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <strong>
+        🔥 LAMUI GAMING
+    </strong>
+
+    <div class="footer-line"></div>
+
+    <p>
+        FF Tournament Platform
+    </p>
+
+    <p>
+        Join • Compete • Win 🏆
+    </p>
+
+</footer>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
 <script>
+
 async function checkRegistration() {
-    const uid = document.getElementById("statusUid").value.trim();
-    const message = document.getElementById("statusMessage");
+
+    const uid =
+        document
+        .getElementById("statusUid")
+        .value
+        .trim();
+
+    const message =
+        document
+        .getElementById("statusMessage");
+
 
     if (!uid) {
-        message.innerText = "❌ Captain UID দিন";
+
+        message.innerText =
+            "❌ Captain UID দিন";
+
+        message.style.color =
+            "#ff4d4d";
+
         return;
     }
 
-    message.innerText = "⏳ Checking...";
+
+    message.innerText =
+        "⏳ Checking...";
+
+    message.style.color =
+        "#ff9d00";
+
 
     try {
-        const response = await fetch(
-            "/player/" + encodeURIComponent(uid)
-        );
 
-        const data = await response.json();
+        const response =
+            await fetch(
+                "/player/" +
+                encodeURIComponent(uid)
+            );
 
-        if (!response.ok || !data.success) {
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
             message.innerText =
-                "❌ " + (data.message || "Registration পাওয়া যায়নি");
+                "❌ " +
+                (
+                    data.message ||
+                    "Registration পাওয়া যায়নি"
+                );
+
+            message.style.color =
+                "#ff4d4d";
+
             return;
         }
 
-        const team = data.data;
-        const status = team.status || "Pending";
+
+        const team =
+            data.data;
+
+
+        const status =
+            team.status ||
+            "Pending";
+
 
         if (status === "Approved") {
+
             message.innerText =
-                "✅ APPROVED\nTeam: " + (team.team_name || "-");
-        } else if (status === "Rejected") {
-            message.innerText =
-                "❌ REJECTED\nTeam: " + (team.team_name || "-");
-        } else {
-            message.innerText =
-                "⏳ PENDING\nTeam: " + (team.team_name || "-");
+                "✅ APPROVED\nTeam: " +
+                (
+                    team.team_name ||
+                    "-"
+                );
+
+            message.style.color =
+                "#22c55e";
+
         }
 
-    } catch (error) {
-        message.innerText =
-            "❌ Server error. আবার চেষ্টা করুন।";
+        else if (status === "Rejected") {
+
+            message.innerText =
+                "❌ REJECTED\nTeam: " +
+                (
+                    team.team_name ||
+                    "-"
+                );
+
+            message.style.color =
+                "#ff3b30";
+
+        }
+
+        else {
+
+            message.innerText =
+                "⏳ PENDING\nTeam: " +
+                (
+                    team.team_name ||
+                    "-"
+                );
+
+            message.style.color =
+                "#ffb020";
+
+        }
+
+
     }
+
+    catch (error) {
+
+        message.innerText =
+            "❌ Server error.\nআবার চেষ্টা করুন।";
+
+        message.style.color =
+            "#ff4d4d";
+    }
+
 }
+
 </script>
+
+
 </body>
 </html>
