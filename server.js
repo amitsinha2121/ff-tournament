@@ -17,7 +17,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 const adminTokens = new Set();
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
@@ -1105,6 +1105,138 @@ app.patch(
         } catch (error) {
 
             console.error(error);
+
+            res.status(500).json({
+                success: false,
+                message: "Server error"
+            });
+        }
+    }
+);
+
+// ===============================
+// ADMIN - UPLOAD TEAM LOGO
+// ===============================
+
+app.post(
+    "/admin/registrations/:id/logo-upload",
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const { id } = req.params;
+
+            const { file_name, file_type, file_base64 } = req.body;
+
+            if (!file_name || !file_type || !file_base64) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Logo file পাওয়া যায়নি"
+                });
+            }
+
+            if (!file_type.startsWith("image/")) {
+                return res.status(400).json({
+                    success: false,
+                    message: "শুধু image upload করা যাবে"
+                });
+            }
+
+            // Base64 থেকে file তৈরি
+            const base64Data = file_base64.replace(
+                /^data:image\/\w+;base64,/,
+                ""
+            );
+
+            const buffer = Buffer.from(
+                base64Data,
+                "base64"
+            );
+
+            // Unique file name
+            const extension =
+                file_name.split(".").pop();
+
+            const filePath =
+                "team-" +
+                id +
+                "-" +
+                Date.now() +
+                "." +
+                extension;
+
+            // Supabase Storage upload
+            const { error: uploadError } =
+                await supabase.storage
+                    .from("team-logos")
+                    .upload(
+                        filePath,
+                        buffer,
+                        {
+                            contentType: file_type,
+                            upsert: true
+                        }
+                    );
+
+            if (uploadError) {
+
+                console.error(
+                    "Logo Upload Error:",
+                    uploadError
+                );
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Logo upload হয়নি"
+                });
+            }
+
+            // Public URL
+            const { data: publicData } =
+                supabase.storage
+                    .from("team-logos")
+                    .getPublicUrl(filePath);
+
+            const logoUrl =
+                publicData.publicUrl;
+
+            // Database-এ URL save
+            const { data, error } =
+                await supabase
+                    .from("tournament_registrations")
+                    .update({
+                        team_logo: logoUrl
+                    })
+                    .eq("id", id)
+                    .select();
+
+            if (error) {
+
+                console.error(
+                    "Logo Database Error:",
+                    error
+                );
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Logo URL database-এ save হয়নি"
+                });
+            }
+
+            res.json({
+                success: true,
+                message: "✅ Team Logo uploaded!",
+                logo_url: logoUrl,
+                data
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Logo Upload Server Error:",
+                error
+            );
 
             res.status(500).json({
                 success: false,
