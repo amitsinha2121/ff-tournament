@@ -14,67 +14,191 @@
             padding: 0;
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #101010;
-            color: white;
-        }
+body {
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(circle at top, #2b0d00 0%, #101010 45%, #050505 100%);
+    color: white;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+header {
+    background: linear-gradient(135deg, #ff4500, #ff1e00, #9d0000);
+    padding: 22px 15px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(255, 69, 0, 0.55);
+    position: relative;
+    overflow: hidden;
+}
 
-        header {
-            background: #ff4500;
-            padding: 20px;
-            text-align: center;
-        }
+header::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 50%;
+    top: -100px;
+    right: -50px;
+    animation: headerGlow 4s infinite alternate;
+}
 
+@keyframes headerGlow {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.4);
+    }
+}
         header h1 {
             font-size: 28px;
         }
 
-        .hero {
-            padding: 30px 20px;
-            text-align: center;
-        }
-
-        .hero h2 {
-            font-size: 25px;
-            margin-bottom: 10px;
-        }
-
-        .hero p {
-            color: #cccccc;
-        }
-.hero h3 {
-    color: #ff4500;
-    font-size: 22px;
-    margin: 8px 0;
+.hero {
+    padding: 45px 20px;
+    text-align: center;
+    animation: heroIn 0.8s ease-out;
 }
-        .tournament {
-            margin: 20px;
-            padding: 20px;
-            background: #1d1d1d;
-            border-radius: 15px;
-        }
 
-        .tournament h3 {
-            color: #ff4500;
-            margin-bottom: 10px;
-        }
+@keyframes heroIn {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.hero h2 {
+    font-size: 30px;
+    margin-bottom: 12px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, #ffffff, #ff5a00, #ffffff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textMove 3s linear infinite;
+}
 
+@keyframes textMove {
+    to {
+        background-position: 200% center;
+    }
+}
+.hero p {
+    color: #d6d6d6;
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto;
+    opacity: 0.9;
+    animation: paragraphIn 1.2s ease-out;
+}
+
+@keyframes paragraphIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 0.9;
+        transform: translateY(0);
+    }
+}
+.hero h3 { color: #ff4500; font-size: 22px; margin: 8px 0;
+}
+.tournament {
+    margin: 20px;
+    padding: 22px;
+    background: linear-gradient(145deg, #1d1d1d, #111111);
+    border: 1px solid rgba(255, 69, 0, 0.35);
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    transition: 0.35s ease;
+    animation: cardIn 0.8s ease-out;
+}
+
+.tournament:hover {
+    transform: translateY(-6px);
+    border-color: #ff4500;
+    box-shadow: 0 0 25px rgba(255, 69, 0, 0.35);
+}
+
+@keyframes cardIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.tournament h3 {
+    color: #ff5a00;
+    margin-bottom: 12px;
+    font-size: 22px;
+    text-shadow: 0 0 10px rgba(255, 69, 0, 0.7);
+    animation: titleGlow 2s infinite alternate;
+}
+
+@keyframes titleGlow {
+    from {
+        text-shadow: 0 0 5px rgba(255, 69, 0, 0.4);
+    }
+
+    to {
+        text-shadow: 0 0 18px rgba(255, 69, 0, 0.9);
+    }
+}
         .info {
             margin: 8px 0;
         }
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff5a00, #ff1e00);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(255, 69, 0, 0.35);
+    transition: 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
 
-        button {
-            width: 100%;
-            padding: 13px;
-            margin-top: 15px;
-            border: none;
-            border-radius: 10px;
-            background: #ff4500;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-        }
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px rgba(255, 69, 0, 0.7);
+}
+
+button:active {
+    transform: scale(0.96);
+}
+
+button::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.18);
+    transform: skewX(-25deg);
+    transition: 0.5s;
+}
+
+button:hover::after {
+    left: 130%;
+}
        .register-button {
     display: block;
     width: fit-content;
@@ -90,12 +214,20 @@
 }
 .status-check {
     margin: 20px;
-    padding: 20px;
-    background: #1d1d1d;
-    border-radius: 15px;
+    padding: 22px;
+    background: linear-gradient(145deg, #1d1d1d, #101010);
+    border: 1px solid rgba(255, 69, 0, 0.3);
+    border-radius: 18px;
     text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
+    transition: 0.3s ease;
 }
 
+.status-check:hover {
+    transform: translateY(-4px);
+    border-color: #ff4500;
+    box-shadow: 0 0 22px rgba(255, 69, 0, 0.3);
+}
 .status-check h3 {
     color: #ff4500;
     margin-bottom: 15px;
@@ -119,6 +251,45 @@
     margin-top: 15px;
     font-size: 16px;
     font-weight: bold;
+}
+body::before {
+    content: "";
+    position: fixed;
+    width: 280px;
+    height: 280px;
+    background: rgba(255, 69, 0, 0.12);
+    border-radius: 50%;
+    filter: blur(70px);
+    top: 20%;
+    left: -120px;
+    pointer-events: none;
+    animation: floatingGlow 7s ease-in-out infinite alternate;
+    z-index: -1;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    width: 250px;
+    height: 250px;
+    background: rgba(255, 0, 0, 0.10);
+    border-radius: 50%;
+    filter: blur(70px);
+    bottom: 10%;
+    right: -100px;
+    pointer-events: none;
+    animation: floatingGlow 8s ease-in-out infinite alternate-reverse;
+    z-index: -1;
+}
+
+@keyframes floatingGlow {
+    from {
+        transform: translateY(-30px) scale(1);
+    }
+
+    to {
+        transform: translateY(40px) scale(1.25);
+    }
 }
 </style>
 </head>
