@@ -181,7 +181,18 @@
 >
     💾 SAVE PAYMENT SETTINGS
 </button>
-        <button
+<button
+    type="button"
+    onclick="deletePaymentSettings()"
+    style="
+        background:#d32f2f;
+        color:white;
+        margin-top:10px;
+    "
+>
+    🗑️ DELETE PAYMENT SETTINGS
+</button>    
+    <button
             class="save"
             onclick="saveTournamentSettings()"
         >
@@ -1079,6 +1090,45 @@ async function savePaymentSettings() {
 
     if (result.success) {
         loadPaymentSettings();
+    }
+}
+async function deletePaymentSettings() {
+
+    const confirmDelete = confirm(
+        "⚠️ Payment settings কি সত্যিই DELETE করতে চান?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+
+        const response = await fetch(
+            "/admin/payment-settings",
+            {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            }
+        );
+
+        const result = await response.json();
+
+        alert(result.message);
+
+        if (result.success) {
+
+            document.getElementById("paymentMethod").value = "bKash";
+            document.getElementById("paymentNumber").value = "";
+            document.getElementById("paymentInstruction").value = "";
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+        alert("❌ Payment settings delete হয়নি!");
+
     }
 }
 </script>

@@ -967,6 +967,46 @@ app.get("/leaderboard", async (req, res) => {
         });
     }
 });
+// Delete payment settings - Admin only
+app.delete(
+    "/admin/payment-settings",
+    requireAdmin,
+    async (req, res) => {
+        try {
+
+            const { error } = await supabase
+                .from("payment_settings")
+                .delete()
+                .not("id", "is", null);
+
+            if (error) {
+                console.error(
+                    "Payment settings delete error:",
+                    error
+                );
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Payment settings delete হয়নি"
+                });
+            }
+
+            res.json({
+                success: true,
+                message: "Payment settings deleted!"
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                success: false,
+                message: "Server error"
+            });
+        }
+    }
+);
 app.listen(PORT, () => {
 
     console.log(
