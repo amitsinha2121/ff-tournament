@@ -607,19 +607,27 @@ async function loadTeams() {
 
     <strong>🖼️ Team Logo</strong>
 
-    <input
-        id="logo-${team.id}"
-        type="url"
-        placeholder="Paste Team Logo URL"
-        value="${team.team_logo || ''}"
-    >
+<input
+    id="logo-file-${team.id}"
+    type="file"
+    accept="image/*"
+    style="
+        width:100%;
+        box-sizing:border-box;
+        padding:12px;
+        margin:7px 0;
+        background:#1e293b;
+        color:white;
+        border-radius:7px;
+    "
+>
 
-    <button
-        class="save"
-        onclick="updateTeamLogo(${team.id})"
-    >
-        💾 Save Logo
-    </button>
+<button
+    class="save"
+    onclick="updateTeamLogo(${team.id})"
+>
+    📤 Upload & Save Logo
+</button>
 
 </div>
                         <p>
@@ -719,60 +727,83 @@ async function loadTeams() {
 // ===============================
 // UPDATE TEAM LOGO
 // ===============================
+// ===============================
+// UPLOAD TEAM LOGO FROM GALLERY
+// ===============================
 
 async function updateTeamLogo(id) {
 
-    const logoInput =
-        document.getElementById("logo-" + id);
+    const fileInput =
+        document.getElementById("logo-file-" + id);
 
-    const team_logo =
-        logoInput.value.trim();
+    const file = fileInput.files[0];
 
-    if (!team_logo) {
-        alert("❌ Team Logo URL দিন");
+    if (!file) {
+        alert("❌ Gallery থেকে Team Logo select করুন");
         return;
     }
 
-    try {
-
-        const response = await fetch(
-            "/admin/registrations/" +
-            id +
-            "/logo",
-            {
-                method: "PATCH",
-
-                headers: {
-                    "Content-Type":
-                        "application/json",
-
-                    "Authorization":
-                        "Bearer " + token
-                },
-
-                body: JSON.stringify({
-                    team_logo
-                })
-            }
-        );
-
-        const result =
-            await response.json();
-
-        alert(result.message);
-
-        if (result.success) {
-            loadTeams();
-        }
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert("❌ Team logo update করতে সমস্যা হয়েছে");
+    if (!file.type.startsWith("image/")) {
+        alert("❌ শুধু Image upload করা যাবে");
+        return;
     }
-}
 
+    // 2MB limit
+    if (file.size > 2 * 1024 * 1024) {
+        alert("❌ Logo maximum 2MB হতে হবে");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = async function () {
+
+        try {
+
+            const response = await fetch(
+                "/admin/registrations/" +
+                id +
+                "/logo-upload",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " + token
+                    },
+
+                    body: JSON.stringify({
+                        file_name: file.name,
+                        file_type: file.type,
+                        file_base64: reader.result
+                    })
+                }
+            );
+
+            const result =
+                await response.json();
+
+            alert(result.message);
+
+            if (result.success) {
+                loadTeams();
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "❌ Team Logo upload করতে সমস্যা হয়েছে"
+            );
+        }
+    };
+
+    reader.readAsDataURL(file);
+}
 // ===============================
 // UPDATE TEAM STATUS
 // ===============================
