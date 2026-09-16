@@ -137,7 +137,34 @@
 
 
         <h3>📱 Contact & Payment</h3>
+       <div id="paymentInfo"
+     style="
+        margin:15px 0;
+        padding:18px;
+        background:linear-gradient(145deg,#242424,#151515);
+        border:1px solid #ff4500;
+        border-radius:15px;
+        box-shadow:0 0 18px rgba(255,69,0,0.25);
+     ">
 
+    <h3 style="color:#ff5a00;margin-bottom:10px;">
+        💳 Payment Information
+    </h3>
+
+    <p id="paymentMethodDisplay">
+        Payment Method: Loading...
+    </p>
+
+    <p id="paymentNumberDisplay">
+        Payment Number: Loading...
+    </p>
+
+    <p id="paymentInstructionDisplay"
+       style="margin-top:10px;color:#ddd;">
+        Payment instruction loading...
+    </p>
+
+</div>
         <input id="phone"
                type="tel"
                placeholder="WhatsApp / Phone Number"
@@ -252,7 +279,50 @@ form.addEventListener("submit", async function(event) {
     }
 
 });
+async function loadPaymentSettings() {
+    try {
+        const response = await fetch("/payment-settings");
+        const result = await response.json();
 
+        if (result.success && result.data) {
+
+            document.getElementById("paymentMethodDisplay").textContent =
+                "Payment Method: " +
+                (result.data.payment_method || "");
+
+            document.getElementById("paymentNumberDisplay").textContent =
+                "Payment Number: " +
+                (result.data.payment_number || "");
+
+            document.getElementById("paymentInstructionDisplay").textContent =
+                result.data.payment_instruction || "";
+
+        } else {
+
+            document.getElementById("paymentMethodDisplay").textContent =
+                "Payment Method: Not set";
+
+            document.getElementById("paymentNumberDisplay").textContent =
+                "Payment Number: Not set";
+
+            document.getElementById("paymentInstructionDisplay").textContent =
+                "Admin এখনো payment information দেননি।";
+        }
+
+    } catch (error) {
+
+        console.error("Payment settings load error:", error);
+
+        document.getElementById("paymentMethodDisplay").textContent =
+            "Payment information load হয়নি";
+
+        document.getElementById("paymentNumberDisplay").textContent = "";
+
+        document.getElementById("paymentInstructionDisplay").textContent = "";
+    }
+}
+
+loadPaymentSettings();
 </script>
 
 </body>

@@ -542,6 +542,103 @@ app.post(
 // ===============================
 
 // Get all notices - Public
+// ===============================
+// PAYMENT SETTINGS
+// ===============================
+
+// Get payment settings - Public
+app.get("/payment-settings", async (req, res) => {
+
+    try {
+
+        const { data, error } = await supabase
+            .from("payment_settings")
+            .select("*")
+            .order("id", { ascending: false })
+            .limit(1);
+
+        if (error) {
+            console.error("Payment settings load error:", error);
+
+            return res.status(500).json({
+                success: false,
+                message: "Payment settings load হয়নি"
+            });
+        }
+
+        res.json({
+            success: true,
+            data: data[0] || null
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+});
+
+
+// Save payment settings - Admin only
+app.post(
+    "/admin/payment-settings",
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const {
+                payment_method,
+                payment_number,
+                payment_instruction
+            } = req.body;
+
+            const { data, error } = await supabase
+                .from("payment_settings")
+                .insert([
+                    {
+                        payment_method,
+                        payment_number,
+                        payment_instruction,
+                        updated_at: new Date().toISOString()
+                    }
+                ])
+                .select();
+
+            if (error) {
+
+                console.error(
+                    "Payment settings save error:",
+                    error
+                );
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Payment settings save হয়নি"
+                });
+            }
+
+            res.json({
+                success: true,
+                message: "Payment settings saved!",
+                data
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                success: false,
+                message: "Server error"
+            });
+        }
+    }
+);
 app.get("/notices", async (req, res) => {
 
     try {

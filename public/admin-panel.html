@@ -153,7 +153,34 @@
             </option>
 
         </select>
+<hr style="margin:25px 0;border:0;border-top:1px solid #444;">
 
+<h2>💳 Payment Settings</h2>
+
+<select id="paymentMethod">
+    <option value="bKash">bKash</option>
+    <option value="Nagad">Nagad</option>
+</select>
+
+<input
+    type="text"
+    id="paymentNumber"
+    placeholder="bKash / Nagad Number"
+>
+
+<textarea
+    id="paymentInstruction"
+    placeholder="Payment Instruction লিখুন..."
+    rows="4"
+    style="width:100%;padding:12px;border-radius:8px;margin-top:10px;"
+></textarea>
+
+<button
+    type="button"
+    onclick="savePaymentSettings()"
+>
+    💾 SAVE PAYMENT SETTINGS
+</button>
         <button
             class="save"
             onclick="saveTournamentSettings()"
@@ -721,7 +748,7 @@ function logout() {
 // ===============================
 
 loadTournamentSettings();
-
+loadPaymentSettings();
 loadTeams();
 const noticeForm = document.getElementById("noticeForm");
 const noticeList = document.getElementById("noticeList");
@@ -974,6 +1001,86 @@ async function deleteLeaderboard(id) {
 
 
 loadLeaderboard();
+// ===============================
+// PAYMENT SETTINGS
+// ===============================
+
+async function loadPaymentSettings() {
+
+    try {
+
+        const response = await fetch(
+            "/payment-settings"
+        );
+
+        const result = await response.json();
+
+        if (result.success && result.data) {
+
+            document.getElementById("paymentMethod").value =
+                result.data.payment_method || "bKash";
+
+            document.getElementById("paymentNumber").value =
+                result.data.payment_number || "";
+
+            document.getElementById("paymentInstruction").value =
+                result.data.payment_instruction || "";
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Payment settings load error:",
+            error
+        );
+    }
+}
+
+
+async function savePaymentSettings() {
+
+    const payment_method =
+        document.getElementById("paymentMethod").value;
+
+    const payment_number =
+        document.getElementById("paymentNumber").value.trim();
+
+    const payment_instruction =
+        document.getElementById("paymentInstruction").value.trim();
+
+    if (!payment_number) {
+
+        alert("❌ Payment number দিন");
+
+        return;
+    }
+
+    const response = await fetch(
+        "/admin/payment-settings",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+
+            body: JSON.stringify({
+                payment_method,
+                payment_number,
+                payment_instruction
+            })
+        }
+    );
+
+    const result = await response.json();
+
+    alert(result.message);
+
+    if (result.success) {
+        loadPaymentSettings();
+    }
+}
 </script>
 
 </body>
