@@ -269,6 +269,18 @@
 <div id="noticeList">
     Loading notices...
 </div>
+
+<!-- ========================= -->
+<!-- BLOCKED USERS -->
+<!-- ========================= -->
+
+<hr>
+
+<h2>🚫 Blocked Users</h2>
+
+<div id="blockedUsers">
+    ⏳ Loading blocked users...
+</div>
     <!-- ========================= -->
     <!-- REGISTERED TEAMS -->
     <!-- ========================= -->
@@ -1278,7 +1290,136 @@ async function deletePaymentSettings() {
 
     }
 }
-</script>
 
+async function loadBlockedUsers() {
+
+    const container =
+        document.getElementById("blockedUsers");
+
+    if (!container) return;
+
+    try {
+
+        const response = await fetch(
+            "/admin/registration-blocks",
+            {
+                headers: {
+                    "Authorization":
+                        "Bearer " + token
+                }
+            }
+        );
+
+        const result =
+            await response.json();
+
+        if (
+            !result.success ||
+            !result.data ||
+            result.data.length === 0
+        ) {
+
+            container.innerHTML =
+                "<p>✅ কোনো blocked user নেই</p>";
+
+            return;
+        }
+
+        container.innerHTML = "";
+
+        result.data.forEach(block => {
+
+            const item =
+                document.createElement("div");
+
+            item.style.cssText = `
+                background:#1e293b;
+                padding:15px;
+                margin:10px 0;
+                border-radius:10px;
+                border-left:4px solid #ef4444;
+            `;
+
+            item.innerHTML = `
+                <div>
+                    🚫 <strong>${block.block_type}</strong>
+                </div>
+
+                <div style="margin:8px 0;">
+                    ${block.block_value}
+                </div>
+
+                <div style="color:#fbbf24;">
+                    Reason: ${block.reason || "N/A"}
+                </div>
+
+                <button
+                    onclick="unblockUser(${block.id})"
+                    style="
+                        margin-top:10px;
+                        background:#16a34a;
+                        color:white;
+                        border:0;
+                        padding:9px 15px;
+                        border-radius:7px;
+                    "
+                >
+                    🔓 UNBLOCK
+                </button>
+            `;
+
+            container.appendChild(item);
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML =
+            "❌ Blocked users load হয়নি";
+    }
+}
+
+async function unblockUser(id) {
+
+    if (!confirm("এই user-কে unblock করতে চান?")) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            "/admin/registration-blocks/" + id,
+            {
+                method: "DELETE",
+
+                headers: {
+                    "Authorization":
+                        "Bearer " + token
+                }
+            }
+        );
+
+        const result =
+            await response.json();
+
+        alert(result.message);
+
+        if (result.success) {
+            loadBlockedUsers();
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("❌ Unblock করতে সমস্যা হয়েছে");
+    }
+}
+</script>
+<script>
+loadBlockedUsers();
+</script>
 </body>
 </html>
