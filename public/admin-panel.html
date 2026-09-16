@@ -31,7 +31,33 @@
             padding: 15px;
             border-radius: 12px;
         }
+.team-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
 
+.team-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ff4500;
+    box-shadow: 0 0 15px rgba(255, 69, 0, 0.6);
+}
+
+.team-header h2 {
+    margin: 0;
+    color: #ff5a00;
+    font-size: 20px;
+}
+
+.team-header p {
+    margin: 5px 0 0;
+    color: #ddd;
+    font-size: 14px;
+}
         h2 {
             color: #ff9800;
         }
@@ -552,15 +578,50 @@ async function loadTeams() {
 
                     <div class="team">
 
-                        <h2>
-                            🏆 Team ${index + 1}
-                        </h2>
+<div class="team-header">
 
-                        <p>
-                            <b>Team:</b>
-                            ${team.team_name}
-                        </p>
+    <img
+        src="${team.team_logo || 'https://via.placeholder.com/60'}"
+        class="team-logo"
+        onerror="this.src='https://via.placeholder.com/60'"
+    >
 
+    <div style="flex:1">
+
+        <h2>${team.team_name}</h2>
+
+        <p>
+            👑 Captain: ${team.captain_name}
+        </p>
+
+    </div>
+
+</div>
+
+<div style="
+    background:#111827;
+    padding:12px;
+    border-radius:10px;
+    margin:12px 0;
+">
+
+    <strong>🖼️ Team Logo</strong>
+
+    <input
+        id="logo-${team.id}"
+        type="url"
+        placeholder="Paste Team Logo URL"
+        value="${team.team_logo || ''}"
+    >
+
+    <button
+        class="save"
+        onclick="updateTeamLogo(${team.id})"
+    >
+        💾 Save Logo
+    </button>
+
+</div>
                         <p>
                             <b>Captain:</b>
                             ${team.captain_name}
@@ -655,7 +716,62 @@ async function loadTeams() {
             "Server error!";
     }
 }
+// ===============================
+// UPDATE TEAM LOGO
+// ===============================
 
+async function updateTeamLogo(id) {
+
+    const logoInput =
+        document.getElementById("logo-" + id);
+
+    const team_logo =
+        logoInput.value.trim();
+
+    if (!team_logo) {
+        alert("❌ Team Logo URL দিন");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            "/admin/registrations/" +
+            id +
+            "/logo",
+            {
+                method: "PATCH",
+
+                headers: {
+                    "Content-Type":
+                        "application/json",
+
+                    "Authorization":
+                        "Bearer " + token
+                },
+
+                body: JSON.stringify({
+                    team_logo
+                })
+            }
+        );
+
+        const result =
+            await response.json();
+
+        alert(result.message);
+
+        if (result.success) {
+            loadTeams();
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("❌ Team logo update করতে সমস্যা হয়েছে");
+    }
+}
 
 // ===============================
 // UPDATE TEAM STATUS

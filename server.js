@@ -1007,6 +1007,112 @@ app.delete(
         }
     }
 );
+// ===============================
+// APPROVED TEAMS - PUBLIC
+// ===============================
+
+app.get("/approved-teams", async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from("tournament_registrations")
+            .select(`
+                id,
+                team_name,
+                team_logo,
+                captain_name,
+                status
+            `)
+            .eq("status", "Approved")
+            .order("created_at", {
+                ascending: false
+            });
+
+        if (error) {
+            console.error("Approved Teams Error:", error);
+
+            return res.status(500).json({
+                success: false,
+                message: "Approved teams load হয়নি"
+            });
+        }
+
+        res.json({
+            success: true,
+            data: data || []
+        });
+
+    } catch (error) {
+
+        console.error("Approved Teams Server Error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+});
+
+
+// ===============================
+// ADMIN - UPDATE TEAM LOGO
+// ===============================
+
+app.patch(
+    "/admin/registrations/:id/logo",
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const { id } = req.params;
+            const { team_logo } = req.body;
+
+            if (!team_logo || !team_logo.trim()) {
+
+                return res.status(400).json({
+                    success: false,
+                    message: "Team logo URL দিতে হবে"
+                });
+            }
+
+            const { data, error } = await supabase
+                .from("tournament_registrations")
+                .update({
+                    team_logo: team_logo.trim()
+                })
+                .eq("id", id)
+                .select();
+
+            if (error) {
+
+                console.error(
+                    "Team Logo Update Error:",
+                    error
+                );
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Team logo update হয়নি"
+                });
+            }
+
+            res.json({
+                success: true,
+                message: "✅ Team logo updated!",
+                data
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                success: false,
+                message: "Server error"
+            });
+        }
+    }
+);
 app.listen(PORT, () => {
 
     console.log(

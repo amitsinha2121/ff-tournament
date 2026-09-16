@@ -923,7 +923,208 @@ footer p {
         padding: 19px;
     }
 }
+/* ===============================
+   APPROVED TEAMS
+================================ */
 
+.approved-teams-section {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 15px;
+}
+
+.approved-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.approved-title > span {
+    font-size: 32px;
+}
+
+.approved-title h2 {
+    margin: 0;
+    color: #ff6a00;
+    font-size: 25px;
+}
+
+.approved-title p {
+    margin: 4px 0 0;
+    color: #aaa;
+    font-size: 13px;
+}
+
+
+/* 2 TEAM PER ROW */
+
+.approved-teams-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+
+/* TEAM CARD */
+
+.approved-team-card {
+    background: linear-gradient(
+        145deg,
+        #151515,
+        #0b0b0b
+    );
+
+    border: 1px solid rgba(255, 77, 0, .35);
+    border-radius: 16px;
+    padding: 14px;
+
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    box-shadow:
+        0 0 18px rgba(255, 69, 0, .10);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+.approved-team-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 0 25px rgba(255, 69, 0, .25);
+}
+
+
+/* TEAM LOGO */
+
+.approved-team-logo {
+    width: 65px;
+    height: 65px;
+    min-width: 65px;
+
+    border-radius: 50%;
+    object-fit: cover;
+
+    border: 2px solid #ff4d00;
+
+    background: #222;
+
+    box-shadow:
+        0 0 14px rgba(255, 69, 0, .45);
+}
+
+
+/* TEAM INFO */
+
+.approved-team-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.approved-team-name {
+    margin: 0;
+
+    color: #fff;
+
+    font-size: 17px;
+    font-weight: 800;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.approved-captain {
+    margin: 5px 0;
+
+    color: #bbb;
+    font-size: 13px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* APPROVED BADGE */
+
+.approved-badge {
+    display: inline-block;
+
+    padding: 4px 8px;
+
+    border-radius: 20px;
+
+    background: #0b7a38;
+
+    color: #fff;
+
+    font-size: 10px;
+    font-weight: bold;
+
+    box-shadow:
+        0 0 8px rgba(0, 255, 100, .25);
+}
+
+
+/* LOADING / EMPTY */
+
+.approved-loading,
+.approved-empty {
+    grid-column: 1 / -1;
+
+    text-align: center;
+
+    padding: 25px;
+
+    background: #111;
+
+    border-radius: 12px;
+
+    color: #aaa;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+
+    .approved-teams-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 10px;
+    }
+
+    .approved-team-card {
+        padding: 10px;
+        gap: 8px;
+        border-radius: 13px;
+    }
+
+    .approved-team-logo {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+    }
+
+    .approved-team-name {
+        font-size: 13px;
+    }
+
+    .approved-captain {
+        font-size: 10px;
+    }
+
+    .approved-badge {
+        font-size: 8px;
+        padding: 3px 6px;
+    }
+}
 </style>
 
 </head>
@@ -1363,9 +1564,128 @@ async function checkRegistration() {
     }
 
 }
+// ===============================
+// LOAD APPROVED TEAMS
+// ===============================
 
+async function loadApprovedTeams() {
+
+    const container =
+        document.getElementById("approvedTeams");
+
+    if (!container) return;
+
+    try {
+
+        const response =
+            await fetch("/approved-teams");
+
+        const result =
+            await response.json();
+
+        if (
+            !result.success ||
+            !result.data ||
+            result.data.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="approved-empty">
+                    🏆 এখনো কোনো Approved Team নেই
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = "";
+
+        result.data.forEach(team => {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "approved-team-card";
+
+            const logo =
+                team.team_logo ||
+                "https://via.placeholder.com/100";
+
+            card.innerHTML = `
+
+                <img
+                    src="${logo}"
+                    class="approved-team-logo"
+                    onerror="
+                        this.src='https://via.placeholder.com/100'
+                    "
+                >
+
+                <div class="approved-team-info">
+
+                    <h3 class="approved-team-name">
+                        ${team.team_name}
+                    </h3>
+
+                    <p class="approved-captain">
+                        👑 ${team.captain_name}
+                    </p>
+
+                    <span class="approved-badge">
+                        ✓ APPROVED
+                    </span>
+
+                </div>
+
+            `;
+
+            container.appendChild(card);
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Approved Teams Error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="approved-empty">
+                ❌ Approved Teams load হয়নি
+            </div>
+        `;
+    }
+}
+
+loadApprovedTeams();
 </script>
 
+<!-- ===============================
+     APPROVED TEAMS
+================================ -->
 
+<section class="approved-teams-section">
+
+    <div class="approved-title">
+        <span>🔥</span>
+
+        <div>
+            <h2>Approved Teams</h2>
+            <p>Officially registered teams</p>
+        </div>
+    </div>
+
+    <div
+        id="approvedTeams"
+        class="approved-teams-grid"
+    >
+        <div class="approved-loading">
+            ⏳ Loading approved teams...
+        </div>
+    </div>
+
+</section>
 </body>
 </html>
