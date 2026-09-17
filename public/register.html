@@ -205,9 +205,6 @@ console.log("REGISTER SUBMIT CLICKED");
     event.preventDefault();
 
     message.textContent = "⏳ Registration হচ্ছে...";
-alert("STEP 1 OK");
-
-alert("STEP 2: Logo processing শুরু");
 const logoFile =
     document.getElementById("team_logo").files[0];
 
@@ -223,8 +220,6 @@ if (logoFile) {
         reader.readAsDataURL(logoFile);
     });
 }
-
-alert("STEP 2 DONE: Logo processed");
 
 const registrationData = {
 
@@ -259,14 +254,8 @@ const registrationData = {
 
 transaction_id:
     document.getElementById("transaction_id").value,
-team_logo: logoBase64
 
 };
-alert("STEP 3: Data ready");
-const logoFile =
-    document.getElementById("team_logo").files[0];
-
-let logoBase64 = null;
 
 if (logoFile) {
     logoBase64 = await new Promise((resolve, reject) => {
@@ -274,10 +263,10 @@ if (logoFile) {
 
         reader.onload = () => resolve(reader.result);
         reader.onerror = reject;
-
         reader.readAsDataURL(logoFile);
     });
 }
+registrationData.team_logo = logoBase64;
     try {
 
         const response = await fetch("/register", {
