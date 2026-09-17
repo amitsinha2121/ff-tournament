@@ -151,8 +151,9 @@ app.post("/register", async (req, res) => {
             player3_uid,
             player4_name,
             player4_uid,
-            phone,
-            transaction_id
+phone,
+transaction_id,
+team_logo
         } = req.body;
         if (await isBlocked({
             type: "uid",
@@ -233,35 +234,108 @@ app.post("/register", async (req, res) => {
         setTimeout(() => {
             recentRegistrations.delete(uidKey);
         }, 60000);
-        const { data, error } = await supabase
-            .from("tournament_registrations")
-            .insert([
-                {
-                    team_name,
-                    captain_name,
-                    captain_uid,
-                    player2_name,
-                    player2_uid,
-                    player3_name,
-                    player3_uid,
-                    player4_name,
-                    player4_uid,
-                    phone,
-                    transaction_id
-                }
-            ])
-            .select();
 
-        if (error) {
+const { data, error } = await supabase
+    .from("tournament_registrations")
+    .insert([
+        {
+            team_name,
+            captain_name,
+            captain_uid,
+            player2_name,
+            player2_uid,
+            player3_name,
+            player3_uid,
+            player4_name,
+            player4_uid,
+            phone,
+            transaction_id
+        }
+    ])
+    .select();
 
-            console.error("Supabase Error:", error);
+if (error) {
 
-            return res.status(500).json({
-                success: false,
-                message: "Registration save হয়নি"
-            });
+    console.error("Supabase Error:", error);
+
+    return res.status(500).json({
+        success: false,
+        message: "Registration save হয়নি"
+    });
+}
+
+const registrationId = data[0].id;
+
+let teamLogoUrl = null;
+
+if (team_logo) {
+
+    try {
+
+        const parts = team_logo.split(",");
+
+        const mimeMatch =
+            parts[0].match(/data:(.*?);base64/);
+
+        const contentType =
+            mimeMatch
+                ? mimeMatch[1]
+                : "image/png";
+
+        const base64Data = parts[1];
+
+        const fileBuffer =
+            Buffer.from(base64Data, "base64");
+
+        const extension =
+            contentType.split("/")[1] || "png";
+
+        const fileName =
+            `team-${registrationId}-${Date.now()}.${extension}`;
+
+        const { error: uploadError } =
+            await supabase.storage
+                .from("team-logos")
+                .upload(
+                    fileName,
+                    fileBuffer,
+                    {
+                        contentType,
+                        upsert: true
+                    }
+                );
+
+        if (uploadError) {
+            console.error(
+                "Team Logo Upload Error:",
+                uploadError
+            );
+        } else {
+
+            const { data: publicUrlData } =
+                supabase.storage
+                    .from("team-logos")
+                    .getPublicUrl(fileName);
+
+            teamLogoUrl =
+                publicUrlData.publicUrl;
+
+            await supabase
+                .from("tournament_registrations")
+                .update({
+                    team_logo: teamLogoUrl
+                })
+                .eq("id", registrationId);
         }
 
+    } catch (logoError) {
+
+        console.error(
+            "Logo Processing Error:",
+            logoError
+        );
+    }
+}
         res.json({
             success: true,
             message: "Registration সফল হয়েছে! 🏆",
