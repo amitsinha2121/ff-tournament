@@ -201,12 +201,32 @@ const form = document.getElementById("registrationForm");
 const message = document.getElementById("message");
 
 form.addEventListener("submit", async function(event) {
-
+console.log("REGISTER SUBMIT CLICKED");
     event.preventDefault();
 
     message.textContent = "⏳ Registration হচ্ছে...";
+alert("STEP 1 OK");
 
-    const registrationData = {
+alert("STEP 2: Logo processing শুরু");
+const logoFile =
+    document.getElementById("team_logo").files[0];
+
+let logoBase64 = null;
+
+if (logoFile) {
+    logoBase64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+
+        reader.readAsDataURL(logoFile);
+    });
+}
+
+alert("STEP 2 DONE: Logo processed");
+
+const registrationData = {
 
         team_name: document.getElementById("team_name").value,
 
@@ -242,6 +262,7 @@ transaction_id:
 team_logo: logoBase64
 
 };
+alert("STEP 3: Data ready");
 const logoFile =
     document.getElementById("team_logo").files[0];
 
